@@ -17,7 +17,7 @@ export default {
   display: flex;
   justify-content: space-between;
   .el-button {
-    width: 122px;
+    // width: 122px;
     height: 50px;
     border: solid 0.5px #d8d8d8;
     box-shadow: 0px 1px 2px rgb(0 0 0 / 15%);

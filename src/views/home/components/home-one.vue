@@ -27,6 +27,9 @@ export default {
 </script>
 
 <style scoped lang="less">
+/deep/.home-button .el-button {
+  width: 120px;
+}
 .goods-list {
   display: flex;
   justify-content: space-between;
