@@ -8,14 +8,17 @@
       </template>
     </el-input>
     <ul class="content-nav">
-      <li><a href="">Home</a></li>
+      <li><a href="">首页</a></li>
       <li>
-        <router-link to="/list">Room</router-link>
+        <router-link to="/list">民宿</router-link>
       </li>
-      <li><a href="">Travel</a></li>
+      <li><a href="">攻略</a></li>
+      <li><a href="">消息</a></li>
+      <li><a href="">帮助</a></li>
+      <li><a href="">手机端</a></li>
     </ul>
     <ul class="content-icon">
-      <li class="icon">
+      <li class="icon" @click="$router.push('/personal')">
         <i class="iconfont icon-RectangleCopy"></i>
       </li>
     </ul>
@@ -76,7 +79,7 @@ export default {
   }
   .icon {
     display: inline-block;
-    margin-left: 200px;
+    margin-left: 165px;
     position: relative;
     width: 50px;
     height: 50px;
@@ -94,14 +97,20 @@ export default {
     }
   }
   .content-nav {
-    margin-left: 130px;
+    margin-left: 200px;
     li {
+      height: 80px;
+      box-sizing: border-box;
       display: inline-block;
-      margin-right: 70px;
+      margin-right: 30px;
       a {
+        line-height: 80px;
         color: #4b5c8d;
-        font-size: 24px;
+        font-size: 16px;
       }
+    }
+    li:hover {
+      border-bottom: 2px solid #000;
     }
   }
 }

@@ -14,7 +14,7 @@
         <li class="icon">
           <i class="iconfont icon-search" @click="isInput = !isInput"></i>
         </li>
-        <li class="icon">
+        <li class="icon" @click="$router.push('/personal')">
           <i class="iconfont icon-RectangleCopy"></i>
         </li>
       </ul>

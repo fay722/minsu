@@ -20,6 +20,15 @@ const routes = [
   {
     path: '/list',
     component: () => import('@/views/list')
+  },
+  {
+    path: '/personal',
+    component: () => import('@/views/personal')
+  },
+  // 管理员
+  {
+    path: '/admin',
+    component: () => import('@/views/admin')
   }
 ]
 
