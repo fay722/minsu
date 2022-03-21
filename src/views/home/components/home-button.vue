@@ -1,12 +1,17 @@
 <template>
   <div class="home-button w">
-    <el-button v-for="n in 7" :key="n" color="#7193d8" plain>Default</el-button>
+    <el-button v-for="(item,index) in cityArr" :key="index" color="#7193d8" plain>{{item}}</el-button>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HomeButton'
+  name: 'HomeButton',
+  setup () {
+    const cityArr = ['丽江', '重庆', '成都', '厦门', '长沙', '大理', '三亚']
+    const currentIndex = 0
+    return { cityArr, currentIndex }
+  }
 }
 </script>
 <style lang="less" scoped>

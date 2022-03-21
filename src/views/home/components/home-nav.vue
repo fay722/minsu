@@ -2,6 +2,7 @@
   <div class="home-nav">
     <div class="content">
       <div class="logo">
+        <img src="@/assets/images/logo.png" class="logo-img" alt="">
       </div>
       <ul class="content-nav">
         <li><a href="">Home</a></li>
@@ -9,10 +10,12 @@
           <router-link to="/list">Room</router-link>
         </li>
         <li><a href="">Travel</a></li>
+        <li><a href="">History</a></li>
+        <li><a href="">Message</a></li>
       </ul>
       <ul class="content-icon">
         <li class="icon">
-          <i class="iconfont icon-search" @click="isInput = !isInput"></i>
+          <i class="iconfont icon-search" @click="$router.push('/list')"></i>
         </li>
         <li class="icon" @click="$router.push('/personal')">
           <i class="iconfont icon-RectangleCopy"></i>
@@ -22,50 +25,72 @@
         <h1 class="text">来一场所走就走的旅行</h1>
       </translation>
     </div>
-    <Transition name="input">
-      <el-input v-model="input" size="default" placeholder="Please" v-show="isInput"></el-input>
-    </Transition>
+    <!-- <el-input v-model="input" size="default" placeholder="Please" v-show="isInput" @change="searchFn"></el-input> -->
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import { getSearchHomestay } from '@/api/homestays'
+import { useRouter } from 'vue-router'
 export default {
   name: 'Home-Nav',
   setup () {
     const input = ref('')
     const isInput = ref(false)
-    return { input, isInput, }
+
+    const router = useRouter()
+
+    const searchResult = ref([])
+    const searchFn = () => {
+
+      getSearchHomestay({ key: input.value }).then(data => {
+        router.push('/list')
+        console.log(data);
+      })
+    }
+
+    return { input, isInput, searchFn }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .home-nav {
+  position: relative;
   overflow: hidden;
   height: 800px;
   background: url(@/assets/images/home-1.jpeg) no-repeat;
   .content {
+    // position: relative;
     display: flex;
     // justify-content: space-between;
     align-items: center;
-    padding: 30px 0;
     font-size: 22px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     .logo {
-      margin-left: 100px;
-      width: 167px;
-      height: 44px;
-      background-color: rgba(255, 255, 255, 0.5);
+      margin-left: 130px;
+      // width: 167px;
+      // height: 44px;
+      // background: url(@/assets/images/logo.png) no-repeat;
+      .logo-img {
+        width: 130px;
+      }
     }
     .content-nav {
       flex: 1;
-      margin-left: 120px;
+      margin-left: 190px;
       li {
         display: inline-block;
         margin-right: 50px;
         a {
+          font-size: 16px;
+          font-family: "Nunito Sans", sans-serif !important;
+          font-weight: 400;
           color: #fff;
+          &:hover {
+            color: #303959;
+          }
         }
       }
     }
@@ -115,9 +140,9 @@ export default {
   .text {
     color: #fff;
     position: absolute;
-    top: 45%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
     font-size: 68px;
   }
 }

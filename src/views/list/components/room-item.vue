@@ -1,10 +1,10 @@
 <template>
-  <a class="room-item">
-    <img src="@/assets/images/4.jpeg" alt="" />
-    <MinsuLike @click="liking" :isLike=isLiking />
-    <p class="name ellipsis">啦啦啦</p>
-    <p class="desc ellipsis">llllllllll</p>
-    <p class="price">&yen;123</p>
+  <a class="room-item" @click="$router.push(`/homestaysInfo/${goods.id}`)">
+    <img :src="goods.mainImage" alt="" />
+    <!-- <MinsuLike @click="liking" :isLike=isLiking /> -->
+    <p class="name ellipsis-2">{{goods.title}}</p>
+    <p class="desc ellipsis">{{goods.city}} · {{goods.describe}}</p>
+    <p class="price">&yen;{{goods.price}} / 晚</p>
   </a>
 </template>
 
@@ -38,8 +38,9 @@ export default {
   position: relative;
   width: 280px;
   //   padding: 20px 30px;
-  margin: 5px 8px;
+  margin: 8px 10px;
   text-align: center;
+  border: 1px solid rgb(245, 243, 243);
   .hoverShadow();
   img {
     width: 100%;
@@ -56,8 +57,8 @@ export default {
     height: 29px;
   }
   .price {
-    color: #90b6cc;
-    font-size: 20px;
+    color: #4e5b89;
+    font-size: 16px;
   }
   /deep/.like-icon {
     position: absolute;

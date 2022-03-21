@@ -32,6 +32,7 @@ import { reactive, ref } from 'vue'
 import { userLogin } from '../../../api/user'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 export default {
   name: 'LoginForm',
   components: {
@@ -49,17 +50,24 @@ export default {
       userPassword: veeSchema.userPassword
     }
     const router = useRouter()
+    const store = useStore()
 
     const loginFn = () => {
       console.log('1')
       try {
         userLogin(userInfo).then((data) => {
           if (data.data.status === 0) {
+            // console.log(data.data)
             ElMessage({
               message: '登陆成功',
               type: 'success',
               center: true,
             })
+            const { token } = data.data
+            const userName = userInfo.userName
+            // console.log('userName', userName);
+            // 将token放入本地内存
+            store.commit('setUser', { userName, token })
             if (data.data.userStatus === 1) {
               return router.push('/admin')
             }

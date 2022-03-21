@@ -9,3 +9,8 @@ export const userRequest = (params) => {
 export const userLogin = (params) => {
     return request('/api/login', 'post', params)
 }
+
+// 修改密码
+export const userChangPwd = (params) => {
+    return request('/my/updatePwd', 'post', params)
+}

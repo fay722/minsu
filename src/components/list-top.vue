@@ -1,7 +1,9 @@
 <template>
   <div class="list-top">
-    <div class="logo"></div>
-    <el-input v-model="input" placeholder="Please input" clearable @focus='onFocus' class="focusInput" ref="DomInput">
+    <div class="logo">
+      <img src="@/assets/images/logo-3.png" alt="" class="logo-img">
+    </div>
+    <el-input v-model="input" placeholder="Please input" clearable class="focusInput" ref="DomInput" @change="searchFn">
       <template #prefix>
         <el-icon class="iconfont icon-search">
         </el-icon>
@@ -26,18 +28,34 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { getSearchHomestay } from '@/api/homestays'
+import { ref, watch } from 'vue'
 export default {
   name: 'ListTop',
-  setup () {
+  setup (props, { emit }) {
     const input = ref()
     const DomInput = ref()
-    const onFocus = () => {
+
+    // const test = () => {
+    //   DomInput.input.focus()
+    // }
+    // test()
+    const searchResult = ref([])
+    const searchFn = () => {
+      getSearchHomestay({ key: input.value }).then(data => {
+        // console.log(data);
+        searchResult.value = data.data.results
+        emit('searchResults', searchResult.value)
+      })
     }
-    return { input, DomInput, onFocus }
+    watch(() => searchResult.value, () => {
+      // console.log('1');
+      emit('searchResults', searchResult.value)
+    })
+    return { input, DomInput, searchFn }
   },
   mounted () {
-    console.log(this.$refs.DomInput.style)
+    this.$refs.DomInput.focus()
   }
 }
 </script>
@@ -55,10 +73,10 @@ export default {
   background-color: #fff;
   width: 100%;
   .logo {
-    height: 30px;
-    width: 50px;
-    background-color: #999;
     margin-left: 50px;
+    .logo-img {
+      width: 100px;
+    }
   }
   /deep/.el-input {
     margin-left: 25px;

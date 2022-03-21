@@ -1,30 +1,4 @@
 <template>
-  <div class="home-top">
-    <div class="container">
-      <ul>
-        <template v-if="userInfo.userName">
-          <li>
-            <a href="javascript:;"><i class="iconfont icon-user"></i>{{ userInfo.userName }}</a>
-          </li>
-          <li><a href="javascript:;" @click="logout">退出登录</a></li>
-        </template>
-        <template v-else>
-          <li>
-            <router-link to="/login">请先登录</router-link>
-          </li>
-          <li><a href="javascript:;">免费注册</a></li>
-        </template>
-        <li><a href="javascript:;">帮助中心</a></li>
-        <li><a href="javascript:;">关于我们</a></li>
-        <li>
-          <a href="javascript:;"><i class="iconfont icon-phone"></i>手机版</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <!-- 二级路由 -->
-  <router-view></router-view>
-  <!-- 底部 -->
   <footer class="app-footer">
     <!-- 联系我们 -->
     <div class="contact">
@@ -91,67 +65,14 @@
 </template>
 
 <script>
-import { useStore } from 'vuex'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-
 export default {
-  name: 'Layout',
-  setup () {
-    const store = useStore()
-    const router = useRouter()
-    // console.log(store.state.user)
-    const userInfo = computed(() => {
-      return store.state.user.user
-    })
-    const logout = () => {
-      store.commit('setUser', {})
-      ElMessage({
-        message: '已退出!',
-        type: 'success',
-        center: true,
-      })
-      router.push('/login')
-    }
-    return { userInfo, logout }
-  }
+  name: 'MinsuFooter'
 }
 </script>
 
 <style lang="less" scoped>
-.home-top {
-  height: 50px;
-  background-color: #2c395b;
-  ul {
-    display: flex;
-    height: 53px;
-    justify-content: flex-end;
-    align-items: center;
-    li {
-      a {
-        padding: 0 15px;
-        color: #cdcdcd;
-        line-height: 1;
-        display: inline-block;
-        i {
-          font-size: 14px;
-          margin-right: 2px;
-        }
-        &:hover {
-          color: #88b0eb;
-        }
-      }
-      ~ li {
-        a {
-          border-left: 2px solid #666;
-        }
-      }
-    }
-  }
-}
 .app-footer {
-  margin-top: 100px;
+  margin-top: 80px;
   border-top: 1px solid #ccc;
   overflow: hidden;
   background-color: #f5f5f5;

@@ -1,20 +1,27 @@
 <template>
   <div class="list-content" v-infinite-scroll="load" infinite-scroll-immediate="false">
-    <RoomItem v-for="n in number" :key="n" />
+    <RoomItem v-for="item in homestays" :key="homestays.id" :goods='item' />
   </div>
   <ListFinished :finished=isFinished :loading="isLoading" />
 </template>
 
 <script>
 import RoomItem from './room-item.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ListFinished from './list-finished.vue'
+import { getHomestays } from '@/api/homestays'
 export default {
   name: 'ListContent',
   components: {
     RoomItem, ListFinished
   },
-  setup () {
+  props: {
+    searchResults: {
+      type: Array
+    }
+  },
+  setup (props) {
+    console.log('1', props.searchResults);
     let number = ref(12)
     const isFinished = ref(false)
     const isLoading = ref(false)
@@ -27,9 +34,20 @@ export default {
         return
       }
       number.value += 4
-
     }
-    return { number, load, isFinished, isLoading }
+
+    const homestays = ref([])
+    getHomestays().then((data) => {
+      // console.log(data);
+      homestays.value = data.data
+      // console.log(homestays.value);
+    })
+
+    watch(props.searchResults, () => {
+      console.log('1');
+      console.log('222', props.searchResults)
+    })
+    return { number, load, isFinished, isLoading, homestays }
   }
 }
 </script>
