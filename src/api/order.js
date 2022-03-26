@@ -9,3 +9,8 @@ export const postOrder = (params) => {
 export const getOrder = () => {
     return request('/my/getOrder', 'get')
 }
+
+// 退订订单 to2
+export const orderStatus2 = (data) => {
+    return request('/my/orderStatus2', 'get', data)
+}

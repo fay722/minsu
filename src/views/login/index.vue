@@ -1,7 +1,7 @@
 <template>
   <div class="LoginIndex">
     <div class="content">
-      <div class="login">
+      <div :class="{login:isLogin,register:!isLogin}">
         <h2 class="title">{{isLogin?'欢迎登陆':'注册'}}</h2>
         <section class="login-section">
           <!-- 登陆表单 -->
@@ -9,7 +9,7 @@
           <!-- 注册表单 -->
           <RegisterForm v-else @chang-login="toLogin" />
           <!-- 注册按钮 -->
-          <a class="register" @click="isLogin = !isLogin">{{isLogin?'注册':'去登陆'}}</a>
+          <a class="lianjie" @click="isLogin = !isLogin">{{isLogin?'注册':'去登陆'}}</a>
           <!-- 登陆注册按钮
           <button class="btn">{{isLogin?'登陆':'注册'}}</button> -->
         </section>
@@ -49,7 +49,33 @@ export default {
     overflow: hidden;
     background: url(@/assets/images/4.jpeg) no-repeat;
     background-size: cover;
+    .register {
+      position: relative;
+      border-radius: 15px;
+      width: 500px;
+      height: 500px;
+      margin: 170px auto;
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.5);
+      .title {
+        font-size: 32px;
+        color: #fff;
+        text-align: center;
+        margin-top: 25px;
+        margin-bottom: 25px;
+      }
+      .lianjie {
+        display: block;
+        position: absolute;
+        bottom: 148px;
+        right: 50px;
+        color: #fff;
+        font-size: 18px;
+        text-decoration: underline;
+      }
+    }
     .login {
+      position: relative;
       border-radius: 15px;
       width: 500px;
       height: 350px;
@@ -63,15 +89,21 @@ export default {
         margin-top: 25px;
         margin-bottom: 25px;
       }
+      .lianjie {
+        display: block;
+        position: absolute;
+        bottom: 110px;
+        right: 50px;
+        color: #fff;
+        font-size: 18px;
+        text-decoration: underline;
+      }
     }
   }
-  .register {
-    display: block;
-    margin: 25px 0 0 400px;
-    color: #fff;
-    font-size: 18px;
-    text-decoration: underline;
+  .login-section {
+    margin: 20px auto;
   }
+
   // .btn {
   //   font-size: 20px;
   //   width: 252px;

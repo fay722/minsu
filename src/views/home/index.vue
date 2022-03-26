@@ -22,11 +22,11 @@ export default {
   },
   setup () {
     const router = useRouter()
-    getPermission().then(data => {
-      if (data.data.status === 1) {
-        router.push('/admin')
-      }
-    })
+    // getPermission().then(data => {
+    //   if (data.data.status === 1) {
+    //     router.push('/admin')
+    //   }
+    // })
   }
 }
 </script>

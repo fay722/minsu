@@ -1,16 +1,19 @@
 <template>
   <a class="room-item" @click="$router.push(`/homestaysInfo/${goods.id}`)">
     <img :src="goods.mainImage" alt="" />
-    <!-- <MinsuLike @click="liking" :isLike=isLiking /> -->
+    <!-- <MinsuLike @click.stop="liking(goods.id)" :isLike=isLiking :homeId=homeId /> -->
     <p class="name ellipsis-2">{{goods.title}}</p>
-    <p class="desc ellipsis">{{goods.city}} · {{goods.describe}}</p>
+    <p class="desc ellipsis">{{goods.city}} · {{goods.type}}</p>
     <p class="price">&yen;{{goods.price}} / 晚</p>
   </a>
 </template>
 
 <script>
 import MinsuLike from '@/components/minsu-like'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { watchCollect } from '@/api/user'
+import { ElMessage } from 'element-plus'
+import { useStore } from 'vuex'
 export default {
   name: 'RoomItem',
   components: {
@@ -22,12 +25,41 @@ export default {
       default: () => ({})
     }
   },
-  setup () {
+  setup (props) {
+    const store = useStore()
+    const homeId = ref(null)
     const isLiking = ref(false)
-    const liking = () => {
+    const liking = (id) => {
+      if (!store.state.user.user.token) {
+        return ElMessage({
+          message: '您未登陆，请先登陆！',
+          type: 'warning',
+          center: true,
+        })
+      }
+      homeId.value = id
       isLiking.value = !isLiking.value
     }
-    return { liking, isLiking }
+    // console.log(store.state.user.user.token);
+    if (store.state.user.user.token) {
+      // console.log('1');
+      watchCollect({ homeId: props.goods.id }).then((data) => {
+        // console.log(data);
+        // if (data.data.status === 1) {
+        //   return ElMessage({
+        //     message: '您未登陆，请先登陆！',
+        //     type: 'warning',
+        //     center: true,
+        //   })
+        // }
+        if (data.data.status === 2) {
+          return isLiking.value = true
+        }
+      })
+    }
+
+
+    return { liking, isLiking, homeId }
   }
 }
 </script>
@@ -65,5 +97,12 @@ export default {
     top: 0;
     right: 10px;
   }
+}
+/deep/.icon-like {
+  width: 34px;
+  height: 34px;
+  position: absolute;
+  top: 0;
+  right: 10px;
 }
 </style>

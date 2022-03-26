@@ -14,3 +14,23 @@ export const userLogin = (params) => {
 export const userChangPwd = (params) => {
     return request('/my/updatePwd', 'post', params)
 }
+
+// 获取手机号
+export const getUserInfo = () => {
+    return request('/my/userinfo', 'get')
+}
+
+//  收藏民宿
+export const getcollectHomestay = (data) => {
+    return request('/my/collectHomestay', 'get', data)
+}
+
+// 取消收藏
+export const cancelCollect = (data) => {
+    return request('/my/cancelCollect', 'get', data)
+}
+
+// 查看是否收藏
+export const watchCollect = (data) => {
+    return request('/my/watchCollect', 'get', data)
+}

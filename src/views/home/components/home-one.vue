@@ -8,7 +8,7 @@
       </div>
       <!-- 面板内容 -->
       <ul class="goods-list">
-        <li v-for=" (item,index) in homestays.slice(0,6)" :key="index"
+        <li v-for=" (item,index) in homestays.splice(0,6)" :key="index"
           @click="$router.push(`/homestaysInfo/${item.id}`)">
           <img :src="item.mainImage" alt="">
           <p class="name ellipsis-2">{{item.title}}</p>
@@ -31,8 +31,8 @@ export default {
     const homestays = ref([])
     getHomestays().then((data) => {
       // console.log(data);
-      homestays.value = data.data
-      // console.log(homestays.value);
+      homestays.value = data.data.filter(item => item.status === '0')
+      console.log(homestays.value);
 
     })
     const cityArr = ['丽江市', '重庆市', '成都市', '厦门市', '长沙市', '大理市', '三亚市']
@@ -41,7 +41,8 @@ export default {
     const citySearch = (city) => {
       getCityHomestays({ city }).then((data) => {
         console.log(data);
-        homestays.value = data.data
+        homestays.value = data.data.filter(item => item.status === '0')
+        // console.log(homestays.value);
       })
     }
     return { homestays, cityArr, currentIndex, citySearch }

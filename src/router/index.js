@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import store from '../store'
 
 const Layout = () => import('@/views/Layout')
+const admin = () => import('@/views/admin')
 const routes = [
   {
     path: '/',
@@ -10,7 +12,6 @@ const routes = [
         path: '/',
         component: () => import('@/views/home/index.vue')
       }
-
     ]
   },
   {
@@ -33,7 +34,33 @@ const routes = [
   // 管理员
   {
     path: '/admin',
-    component: () => import('@/views/admin')
+    component: admin,
+    children: [
+      {
+        path: '/admin/homeIndex',
+        component: () => import('@/views/admin/components/homeIndex.vue')
+      },
+      {
+        path: '/admin/user',
+        component: () => import('@/views/admin/components/user.vue')
+      },
+      {
+        path: '/admin/homestays',
+        component: () => import('@/views/admin/components/homestays.vue'),
+      },
+      {
+        path: '/admin/order',
+        component: () => import('@/views/admin/components/order.vue')
+      },
+      {
+        path: '/admin/tips',
+        component: () => import('@/views/admin/components/tips.vue')
+      },
+      {
+        path: '/admin/collect',
+        component: () => import('@/views/admin/components/collect.vue')
+      }
+    ]
   }
 ]
 
@@ -45,19 +72,21 @@ const router = createRouter({
     return { top: 0 }
   },
 })
-
-export default router
 // 路由守卫
-// const store = useStore()
-// router.beforeEach((to, from, next) => {
+// router.beforeEach((to, from) => {
 //   if (to.path === '/admin') {
-//     // console.log(store.state.user.user.userName);
-//     // if (store.state.user.user.userName) {
-//     //   console.log('1');
-//     //   next()
-//     // } else {
-//     //   console.log('2');
-//     //   next(false)
-//     // }
+//     // console.log(store.state.user.user)
+//     if (store.state.user.user.userName === 'admin') {
+//       return true
+//     } else {
+//       return false
+//     }
+//   } else if (to.path === '/login') {
+//     return true
+//   } else {
+
 //   }
 // })
+
+export default router
+

@@ -4,7 +4,7 @@
       <!-- 按钮 -->
       <!-- 面板内容 -->
       <ul class="goods-list">
-        <li v-for="item in datongInfo" :key="item.id" @click="$router.push(`/homestaysInfo/${item.id}`)">
+        <li v-for="item in datongInfo.splice(0,8)" :key="item.id" @click="$router.push(`/homestaysInfo/${item.id}`)">
           <img :src=" item.mainImage" alt="">
           <p class="name ellipsis-2">{{item.title}}</p>
           <p class="price">&yen;{{item.price}} / 晚</p>
@@ -24,7 +24,7 @@ export default {
   setup () {
     const datongInfo = ref([])
     getCityHomestays({ city: '大同市' }).then(data => {
-      datongInfo.value = data.data
+      datongInfo.value = data.data.filter(item => item.status === '0')
       // console.log(datongInfo.value);
     })
     return { datongInfo }
@@ -36,12 +36,14 @@ export default {
 .goods-list {
   display: flex;
   justify-content: space-between;
+  // justify-content: flex-start;
   flex-wrap: wrap;
   li {
     width: 24%;
     height: 406px;
     margin-top: 8px;
     background: rgb(237, 241, 250);
+    // margin-right: 12px;
     .hoverShadow();
     img {
       width: 100%;

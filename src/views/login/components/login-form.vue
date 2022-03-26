@@ -19,9 +19,10 @@
           <i class="iconfont icon-cry"></i>{{ errors.userPassword }}
         </div>
       </div>
+
     </Form>
     <!-- 按钮 -->
-    <button class="btn" @click="loginFn">登陆</button>
+    <button class="btn" @click.enter="loginFn">登陆</button>
   </div>
 </template>
 
@@ -47,7 +48,7 @@ export default {
 
     const schema = {
       userName: veeSchema.userName,
-      userPassword: veeSchema.userPassword
+      userPassword: veeSchema.userPassword,
     }
     const router = useRouter()
     const store = useStore()

@@ -12,11 +12,29 @@
       </div>
       <div class="form-item">
         <div class="input">
+          <label class="text" for="">请输入手机号：</label>
+          <Field type="text" name="tel" v-model="userInfo.tel" />
+        </div>
+        <div class="error" v-if="errors.tel">
+          <i class="iconfont icon-cry"></i>{{ errors.tel}}
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="input">
           <label class="text" for="">请输入密码：</label>
           <Field type="password" name="userPassword" v-model="userInfo.userPassword" />
         </div>
         <div class="error" v-if="errors.userPassword">
           <i class="iconfont icon-cry"></i>{{ errors.userPassword }}
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="input">
+          <label class="text" for="">请确定密码：</label>
+          <Field type="password" name="newPwd" v-model="userInfo.comPwd" />
+        </div>
+        <div class="error" v-if="comPwdInfo">
+          <i class="iconfont icon-cry"></i>两次密码不一致
         </div>
       </div>
     </Form>
@@ -28,7 +46,7 @@
 <script>
 import veeSchema from '../../../utils/vee-validate-schema'
 import { Form, Field } from 'vee-validate'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { userRequest } from '../../../api/user'
 import { ElMessage } from 'element-plus'
 export default {
@@ -40,12 +58,24 @@ export default {
   setup (props, { emit }) {
     const userInfo = reactive({
       userName: '',
+      tel: '',
       userPassword: '',
+      comPwd: ''
+    })
+
+    const comPwdInfo = ref(false)
+    watch(() => userInfo.comPwd, () => {
+      if (userInfo.comPwd !== userInfo.userPassword) {
+        comPwdInfo.value = true
+      } else {
+        comPwdInfo.value = false
+      }
     })
 
     const schema = {
       userName: veeSchema.userName,
-      userPassword: veeSchema.userPassword
+      userPassword: veeSchema.userPassword,
+      tel: veeSchema.tel,
     }
 
     const formCom = ref(null)
@@ -83,7 +113,7 @@ export default {
       }
     }
 
-    return { userInfo, schema, formCom, registerFn }
+    return { userInfo, schema, formCom, registerFn, comPwdInfo }
   }
 }
 </script>
@@ -94,12 +124,13 @@ export default {
   height: 100px;
   margin: 10px auto;
   .r-f {
-    padding-left: 30px;
+    padding-left: 10px;
     color: #fff;
     font-size: 20px;
     .form-item {
       position: relative;
       .text {
+        width: 150px;
         display: inline-block;
         // width: 180px;
         text-align: right;

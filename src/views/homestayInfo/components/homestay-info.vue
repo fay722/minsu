@@ -1,9 +1,13 @@
 <template>
   <div class="box" v-if="homestay">
     <div class="homestayInfo">
-      <div class="city">
-        {{homestay.city}} · {{homestay.describe}}
+      <span class="city">
+        {{homestay.city}} · {{homestay.type}}
+      </span>
+      <div class="collect">
+        <MinsuLike :isLike='isLiking' @click="likeFn" :homeId='homestay.id' @total='getTotal' />{{collectNum}}
       </div>
+
       <h2 class="title">{{homestay.title}}</h2>
       <div class="position">
         <i class="iconfont icon-map-filling"></i> {{homestay.position}}
@@ -53,7 +57,7 @@
         <div>日期</div>
         <div class="block">
           <el-date-picker v-model="value1" type="daterange" range-separator="To" start-placeholder="Start date"
-            end-placeholder="End date" />
+            end-placeholder="End date" :disabled-date="disabledDate" />
         </div>
       </div>
       <!-- 人数 -->
@@ -102,13 +106,13 @@
         <el-form-item label="人数" :label-width="formLabelWidth">
           {{value?value:'未选择'}}
         </el-form-item>
-        <el-form-item label="入住人" :label-width="formLabelWidth">
-          <el-input v-model="form.person" autocomplete="off" />
-        </el-form-item>
         <el-form-item label="手机号" :label-width="formLabelWidth">
           <el-input v-model.number="form.tel" autocomplete="off" maxlength="11"
             oninput="value = value.replace(/[^\d]/g,'')" />
           <div v-if="rules.error"> {{rules.error}}</div>
+        </el-form-item>
+        <el-form-item label="入住人" :label-width="formLabelWidth">
+          <el-input v-model="form.person" autocomplete="off" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -127,8 +131,14 @@ import moment from 'moment'
 import { ElMessage } from 'element-plus'
 import { postOrder } from '@/api/order'
 import { useRoute } from 'vue-router'
+import { getUserInfo } from '@/api/user'
+import { getCollectNum, editHomestayStatus } from '@/api/homestays'
+import MinsuLike from '@/components/minsu-like'
+import { watchCollect } from '@/api/user'
+import { useStore } from 'vuex'
 export default {
   name: 'HomestayInfo',
+  components: { MinsuLike },
   props: {
     homestay: {
       type: Object,
@@ -139,12 +149,57 @@ export default {
     const route = useRoute()
 
     const detailsArray = ref([])
-    watch(props, () => {
-      console.log('1', props.homestay);
-      detailsArray.value = props.homestay.details.split(';')
-      console.log(detailsArray.value);
-    })
+    const collectNum = ref(null)
+    const isLiking = ref(false)
+    // 查看用户是否收藏
+    const store = useStore()
 
+    watch(props, () => {
+      // 查看是否收藏
+      if (store.state.user.user.token) {
+        // console.log('1');
+        watchCollect({ homeId: props.homestay.id }).then((data) => {
+          // console.log(data);
+          // if (data.data.status === 1) {
+          //   return ElMessage({
+          //     message: '您未登陆，请先登陆！',
+          //     type: 'warning',
+          //     center: true,
+          //   })
+          // }
+          if (data.data.status === 2) {
+            return isLiking.value = true
+          }
+        })
+      }
+      // 收藏数
+      getCollectNum({ homeId: props.homestay.id }).then(data => {
+        if (data.data.status === 0) {
+          collectNum.value = data.data.result.num
+          // console.log(collectNum.value);
+        }
+      })
+      // watch(() => isLiking.value, () => {
+      //   getCollectNum({ homeId: props.homestay.id }).then(data => {
+      //     if (data.data.status === 0) {
+      //       console.log('zong', data)
+      //       collectNum.value = data.data.result.num
+      //       // console.log(collectNum.value);
+      //     }
+      //   })
+      // })
+      // console.log('1', props.homestay.id);
+      // console.log('1', props.homestay);
+      detailsArray.value = props.homestay.details.split(';')
+      // console.log(detailsArray.value);
+    })
+    // 收藏/不收藏
+    const likeFn = () => {
+      isLiking.value = !isLiking.value
+    }
+    const getTotal = (value) => {
+      collectNum.value = value
+    }
     // 订单信息
     const form = reactive({
       formDate: moment(new Date()).format('YYYY-MM-DD'),
@@ -155,6 +210,14 @@ export default {
       tel: '',
       peoples: ''
     })
+
+    // 获取用户手机号
+    getUserInfo().then(data => {
+      if (data.data.status === 0) {
+        form.tel = data.data.data.tel
+      }
+    })
+
     // 日期
     const value1 = ref([])
     // 相差天数 即预定天数
@@ -170,7 +233,7 @@ export default {
       // 相差天数
       iDays.value = moment(sDate2.value).diff(sDate1.value, 'day')
       form.days = iDays.value
-      console.log(iDays.value);
+      // console.log(iDays.value);
     })
     // 人数
     const value = ref('')
@@ -202,7 +265,7 @@ export default {
     // 内 确认弹出框
     const innerVisible = ref(false)
     const confirmFn = () => {
-      if (form.name == "" || form.tel == "" || form.formDate == "" || form.reserveDate == "" || form.checkOutDate == "" || form.days == "" || form.peoples == "") {
+      if (form.name == "" || form.tel == "" || form.tel.length !== 11 || form.formDate == "" || form.reserveDate == "" || form.checkOutDate == "" || form.days == "" || form.peoples == "" || form.person == "") {
         return ElMessage({
           message: '信息不完善！',
           type: 'error',
@@ -213,26 +276,36 @@ export default {
       innerVisible.value = true
     }
     let id = parseInt(route.params.id)
-    console.log(id);
+    // console.log(id);
     const okFn = () => {
       innerVisible.value = false
-      postOrder({ homeId: id, ...form }).then(data => {
+      editHomestayStatus({ id }).then(data => {
         if (data.data.status === 0) {
-          return ElMessage({
-            message: data.data.message,
-            type: 'success',
-            center: true,
-          })
-        } else {
-          return ElMessage({
-            message: '预定失败！',
-            type: 'error',
-            center: true,
+          postOrder({ homeId: id, ...form }).then(data => {
+            if (data.data.status === 0) {
+              return ElMessage({
+                message: data.data.message,
+                type: 'success',
+                center: true,
+              })
+            } else {
+              return ElMessage({
+                message: '预定失败！',
+                type: 'error',
+                center: true,
+              })
+            }
           })
         }
       })
+
     }
-    return { value1, value, options, detailsArray, iDays, dialogFormVisible, formLabelWidth, form, sDate1, sDate2, rules, innerVisible, confirmFn, okFn }
+
+    const disabledDate = (value1) => {
+      return value1.getTime() < new Date()
+    }
+
+    return { value1, value, options, detailsArray, iDays, dialogFormVisible, formLabelWidth, form, sDate1, sDate2, rules, innerVisible, confirmFn, okFn, collectNum, isLiking, likeFn, getTotal, disabledDate }
   }
 }
 </script>
@@ -251,10 +324,22 @@ export default {
     //   background-color: #999;
     .city {
       font-size: 16px;
-      margin-bottom: 10px;
+      margin-bottom: 13px;
+    }
+    .icon-like {
+      width: 34px;
+      height: 34px;
+      position: absolute;
+      top: 0;
+      right: 10px;
     }
     .title {
       font-size: 32px;
+    }
+    .collect {
+      line-height: 30px;
+      float: right;
+      color: rgb(199, 83, 83);
     }
     .details {
       margin-top: 13px;
@@ -350,6 +435,16 @@ export default {
   }
   /deep/.el-dialog__body {
     padding: 0px !important;
+  }
+  .minsu-like {
+    float: right;
+    display: inline-block;
+    // margin-bottom: 13px;
+  }
+  /deep/.icon-like {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
   }
 }
 </style>

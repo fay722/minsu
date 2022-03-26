@@ -20,3 +20,18 @@ export const getCityHomestays = (data) => {
 export const getSearchHomestay = (data) => {
     return request('/api/searchHomestay', 'get', data)
 }
+
+// 获取收藏数
+export const getCollectNum = (data) => {
+    return request('/api/getCollectNum', 'get', data)
+}
+
+// 修改房屋状态
+export const editHomestayStatus = (data) => {
+    return request('/api/editHomestayStatus', 'get', data)
+}
+
+// 退订 修改状态为0
+export const editTuidingStatus = (data) => {
+    return request('/api/editTuidingStatus', 'get', data)
+}

@@ -1,125 +1,125 @@
 <template>
   <!-- <div v-if="!permissions">无权限</div> -->
   <el-container class="layout-container-demo">
-    <el-header>Header</el-header>
+    <el-header>
+      <span class="welcome">
+        欢迎您 {{$store.state.user.user.userName}}
+      </span>
+      <span class="title">旅游民宿后台管理</span>
+      <span class="quit" @click="quit">
+        退出登录
+      </span>
+    </el-header>
     <el-container>
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-scrollbar>
-          <el-menu :default-openeds="['1', '3']">
-            <el-sub-menu index="1">
-              <template #title>
-                <el-icon>
-                  <message />
-                </el-icon>Navigator One
-              </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="1-1">Option 1</el-menu-item>
-                <el-menu-item index="1-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="1-3">Option 3</el-menu-item>
-              </el-menu-item-group>
-              <el-sub-menu index="1-4">
-                <template #title>Option4</template>
-                <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-              </el-sub-menu>
-            </el-sub-menu>
-            <el-sub-menu index="2">
-              <template #title>
-                <el-icon>
-                  <icon-menu />
-                </el-icon>Navigator Two
-              </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="2-1">Option 1</el-menu-item>
-                <el-menu-item index="2-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="2-3">Option 3</el-menu-item>
-              </el-menu-item-group>
-              <el-sub-menu index="2-4">
-                <template #title>Option 4</template>
-                <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-              </el-sub-menu>
-            </el-sub-menu>
-            <el-sub-menu index="3">
-              <template #title>
-                <el-icon>
-                  <setting />
-                </el-icon>Navigator Three
-              </template>
-              <el-menu-item-group>
-                <template #title>Group 1</template>
-                <el-menu-item index="3-1">Option 1</el-menu-item>
-                <el-menu-item index="3-2">Option 2</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group 2">
-                <el-menu-item index="3-3">Option 3</el-menu-item>
-              </el-menu-item-group>
-              <el-sub-menu index="3-4">
-                <template #title>Option 4</template>
-                <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-              </el-sub-menu>
-            </el-sub-menu>
-          </el-menu>
-        </el-scrollbar>
+      <el-aside width="180px" style="background-color:rgb(238, 241, 246)">
+        <el-menu>
+          <el-menu-item index="1" @click="$router.push('/admin/homeIndex')">
+            <i class="iconfont icon-home-filling"></i>
+            首页
+          </el-menu-item>
+          <el-menu-item index="2" @click="$router.push('/admin/user')">
+            <i class="iconfont icon-user-filling"></i>
+            用户信息
+          </el-menu-item>
+          <el-menu-item index="3" @click="$router.push('/admin/homestays')">
+            <i class="iconfont icon-dynamic-filling"></i>
+            民宿信息
+          </el-menu-item>
+          <el-menu-item index="4" @click="$router.push('/admin/order')">
+            <i class="iconfont icon-edit-filling"></i>
+            订单信息
+          </el-menu-item>
+          <el-menu-item index="5" @click="$router.push('/admin/tips')">
+            <i class="iconfont icon-map-filling"></i>
+            攻略信息
+          </el-menu-item>
+          <el-menu-item index="5" @click="$router.push('/admin/collect')">
+            <i class="iconfont icon-favorite-filling"></i>
+            收藏情况
+          </el-menu-item>
+        </el-menu>
       </el-aside>
+
       <el-container>
         <el-main>
-          <el-table :data="tableData">
+          <router-view></router-view>
+          <!-- <el-table :data="tableData">
             <el-table-column prop="date" label="Date" width="140" />
             <el-table-column prop="name" label="Name" width="120" />
             <el-table-column prop="address" label="Address" />
-          </el-table>
+          </el-table> -->
         </el-main>
+
       </el-container>
+
     </el-container>
   </el-container>
 </template>
 
 <script>
 import { ref } from 'vue'
-import { Message, Menu as IconMenu, Setting } from '@element-plus/icons-vue'
-import { getItem } from '@/utils/storage'
-import { getPermission } from '@/api/admin'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 export default {
   name: 'adminHome',
   setup () {
-    const item = {
-      date: '2016-05-02',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles',
+    const store = useStore()
+    const router = useRouter()
+    const quit = () => {
+      store.commit('setUser', {})
+      ElMessage({
+        message: '已退出!',
+        type: 'success',
+        center: true,
+      })
+      router.push('/login')
     }
-    const tableData = ref(Array.from({ length: 20 }).fill(item))
-
-    // const permissions = ref(false)
-    // getPermission().then(data => {
-    //   if (data.data.status === 1) {
-    //     permissions.value = true
-    //   }
-    //   console.log(data);
-    // })
-
-    // return { item, tableData, permissions }
-    return { item, tableData }
-
+    return { quit }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.el-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  .title {
+    font-size: 24px;
+  }
+}
+.el-aside {
+  padding-top: 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 998;
+  height: 100vh;
+}
 .layout-container-demo .el-header {
-  height: 30px;
+  height: 70px;
   position: relative;
   background-color: #2f3958;
-  color: var(--el-text-color-primary);
+  color: #fff;
+  padding-left: 40px;
+  line-height: 70px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  .quit {
+    display: inline-block;
+    color: #fff;
+    font-size: 14px;
+    margin-right: 20px;
+  }
 }
 .layout-container-demo .el-aside {
   width: 240px;
   color: var(--el-text-color-primary);
-  background: #fff !important;
+  // background: #fff !important;
   border-right: solid 1px #e6e6e6;
   box-sizing: border-box;
 }
@@ -136,5 +136,22 @@ export default {
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
+}
+// /deep/.el-icon svg {
+//   display: none;
+// }
+.iconfont {
+  margin: 0 20px;
+}
+
+.el-menu-item {
+  background-color: rgb(238, 241, 246);
+  color: #313956;
+}
+/deep/.el-table th.el-table__cell > .cell {
+  color: #313956;
+}
+/deep/.el-input__inner {
+  border: 1px solid #ccc;
 }
 </style>

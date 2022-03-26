@@ -95,5 +95,8 @@ export default {
       height: 100%;
     }
   }
+  div {
+    overflow: hidden;
+  }
 }
 </style>

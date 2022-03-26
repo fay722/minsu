@@ -2,14 +2,23 @@
   <div class="PersonalCenter">
     <div class="box" v-if="userInfo.token">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-        <el-menu-item index="1" @click="activeIndex = '1'">修改密码</el-menu-item>
-        <el-menu-item index="2" @click="activeIndex = '2'">我的订单</el-menu-item>
+        <el-menu-item index="1" @click="activeIndex = '1'">我的订单</el-menu-item>
+        <!-- <el-sub-menu index="1">
+          <template #title>我的订单</template>
+          <el-menu-item index="1-0" @click="activeIndex = '1-0'">未入住</el-menu-item>
+          <el-menu-item index="1-1" @click="activeIndex = '1-1'">已入住</el-menu-item>
+          <el-menu-item index="1-2" @click="activeIndex = '1-2'">已退订</el-menu-item>
+        </el-sub-menu> -->
+        <el-menu-item index="2" @click="activeIndex = '2'">我的收藏</el-menu-item>
+
+        <el-menu-item index="3" @click="activeIndex = '3'">修改密码</el-menu-item>
+
       </el-menu>
       <div class="content">
-        <div class="order" v-if="activeIndex==='2'">
+        <div class="order" v-if="activeIndex==='1'">
           <PersonalOrder />
         </div>
-        <div class="chang-psd" v-else>
+        <div class=" chang-psd" v-else-if="activeIndex==='3'">
           <span>你好！{{userInfo.userName}}</span>
           <Form ref="formCom" class="form-input" :validation-schema="schema" v-slot="{ errors }" autocomplete="off">
             <div class="form-item">
@@ -33,6 +42,9 @@
           </Form>
           <el-button class="confirm-change" type="primary" round @click="changPwdFn">确认修改</el-button>
         </div>
+        <div class="myCollect" v-else>
+          <PersonalCollect />
+        </div>
       </div>
     </div>
     <div class="box" v-else>
@@ -51,18 +63,21 @@ import { Form, Field } from 'vee-validate'
 import { userChangPwd } from '@/api/user'
 import { ElMessage } from 'element-plus'
 import PersonalOrder from './personal-order.vue'
+import PersonalCollect from './personal-collect.vue'
 export default {
   name: 'PersonalCenter',
   components: {
-    Form, Field, PersonalOrder
+    Form, Field, PersonalOrder, PersonalCollect
   },
   setup () {
     const activeIndex = ref("1");
     const store = useStore()
     const router = useRouter()
-    const userInfo = computed(() => {
-      return store.state.user.user
-    })
+    const userInfo = store.state.user.user
+    // console.log(userInfo);
+    // const userInfo = computed(() => {
+    //   return store.state.user.user
+    // })
 
     const userPassword = reactive({
       oldPwd: '',
@@ -163,5 +178,8 @@ export default {
       text-align: center;
     }
   }
+}
+/deep/.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
+  font-size: 20px;
 }
 </style>

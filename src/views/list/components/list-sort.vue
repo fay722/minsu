@@ -1,16 +1,24 @@
 <template>
   <div class="list-sort">
     <div class="sort">
-      <a href="javascript:;" :class="{active:active==='moren'}" @click="active='moren'">
+      <a href="javascript:;" :class="{active:sortParams.sortField === null}" @click="changeSort(null)">
         默认排序
       </a>
-      <a href="javascript:;" :class="{active:active==='haoping'}" @click="active='haoping'">
-        好评优先
+      <a href="javascript:;" :class="{active:sortParams.sortField === 'shoucang'}" @click="changeSort('shoucang')">
+        收藏优先
       </a>
-      <a href="javascript:;" :class="{active:active==='jiage'}" @click="active='jiage'">
+      <a href="javascript:;" @click="changeSort('jiage')">
         价格排序
-        <i class="arrow up" />
-        <i class="arrow down" />
+        <i class="arrow up" :class="{
+            active:
+              sortParams.sortField === 'jiage' &&
+              sortParams.sortMethod == 'asc',
+          }" />
+        <i class="arrow down" :class="{
+            active:
+              sortParams.sortField === 'jiage' &&
+              sortParams.sortMethod == 'desc',
+          }" />
       </a>
       <a href="javascript:;">
         更多筛选条件
@@ -19,19 +27,46 @@
   </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 export default {
   name: 'ListSort',
-  setup () {
-    const active = ref('moren')
-    return { active }
+  setup (props, { emit }) {
+
+    const sortParams = reactive({
+      // sortField====>moren haoping jiage
+      // sortMethod====>asc为正序 desc为倒序
+      sortField: null,
+      sortMethod: null
+    })
+    const changeSort = (sortField) => {
+      if (sortField === 'jiage') {
+        sortParams.sortField = sortField
+        if (sortParams.sortMethod === null) {
+          // 第一次点击，默认是降序
+          sortParams.sortMethod = 'desc'
+        } else {
+          // 其他情况根据当前排序取反
+          sortParams.sortMethod = sortParams.sortMethod === 'desc' ? 'asc' : 'desc'
+        }
+      } else {
+        // 如果排序未改变停止逻辑
+        if (sortParams.sortField === sortField) { return }
+        sortParams.sortField = sortField
+        sortParams.sortMethod = null
+      }
+      // 触发父组件事件
+      emit('sort-change', sortParams)
+    }
+
+    return { changeSort, sortParams, changeSort }
   }
 }
 </script>
 
 <style scoped lang='less'>
 .list-sort {
-  margin-top: 80px;
+  padding-left: 30px;
+  margin-top: 90px;
   height: 48px;
   display: flex;
   align-items: center;
@@ -62,14 +97,14 @@ export default {
           top: 3px;
           border-bottom-color: #bbb;
           &.active {
-            border-bottom-color: #90b6cc;
+            border-bottom-color: #455d91;
           }
         }
         &.down {
           top: 15px;
-          border-top-color: #90b6cc;
+          border-top-color: #bbb;
           &.active {
-            border-top-color: #90b6cc;
+            border-top-color: #455d91;
           }
         }
       }

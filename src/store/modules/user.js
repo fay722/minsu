@@ -3,7 +3,8 @@ export default {
     state () {
         return {
             user: {
-                username: '',
+                userName: '',
+                tel: '',
                 token: '',
             }
         }
