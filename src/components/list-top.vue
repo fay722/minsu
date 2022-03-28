@@ -14,7 +14,9 @@
       <li>
         <router-link to="/list">民宿</router-link>
       </li>
-      <li><a href="">攻略</a></li>
+      <li>
+        <router-link to="/tips" href="">攻略</router-link>
+      </li>
       <li><a href="">消息</a></li>
       <li><a href="">帮助</a></li>
       <li><a href="">手机端</a></li>

@@ -9,7 +9,9 @@
         <li>
           <router-link to="/list">Room</router-link>
         </li>
-        <li><a href="">Travel</a></li>
+        <li>
+          <router-link to="/tips">Travel</router-link>
+        </li>
         <li><a href="">History</a></li>
         <li><a href="">Message</a></li>
       </ul>

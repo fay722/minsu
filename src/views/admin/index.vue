@@ -6,17 +6,15 @@
         欢迎您 {{$store.state.user.user.userName}}
       </span>
       <span class="title">旅游民宿后台管理</span>
-      <span class="quit" @click="quit">
-        退出登录
+      <span class="quit">
+        <span @click="quit">退出登录</span>
+        <router-link to="/" class="goHome">浏览前台</router-link>
       </span>
+
     </el-header>
     <el-container>
       <el-aside width="180px" style="background-color:rgb(238, 241, 246)">
         <el-menu>
-          <el-menu-item index="1" @click="$router.push('/admin/homeIndex')">
-            <i class="iconfont icon-home-filling"></i>
-            首页
-          </el-menu-item>
           <el-menu-item index="2" @click="$router.push('/admin/user')">
             <i class="iconfont icon-user-filling"></i>
             用户信息
@@ -115,6 +113,10 @@ export default {
     font-size: 14px;
     margin-right: 20px;
   }
+}
+.goHome {
+  margin-left: 20px;
+  color: #fff;
 }
 .layout-container-demo .el-aside {
   width: 240px;

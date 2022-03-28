@@ -60,3 +60,13 @@ export const editTip = (data) => {
 export const searchTip = (data) => {
     return request('/admin/searchTip', 'post', data)
 }
+
+// 获取所有订单信息
+export const getAllOrder = (data) => {
+    return request('/admin/getAllOrder', 'get')
+}
+
+// 管理员修改民宿信息
+export const editHomestay = (data) => {
+    return request('/admin/editHomestay', 'post', data)
+}

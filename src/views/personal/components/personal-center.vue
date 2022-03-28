@@ -2,13 +2,13 @@
   <div class="PersonalCenter">
     <div class="box" v-if="userInfo.token">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-        <el-menu-item index="1" @click="activeIndex = '1'">我的订单</el-menu-item>
-        <!-- <el-sub-menu index="1">
+        <!-- <el-menu-item index="1" @click="activeIndex = '1'">我的订单</el-menu-item> -->
+        <el-sub-menu index="1" @click="activeIndex = '1'">
           <template #title>我的订单</template>
-          <el-menu-item index="1-0" @click="activeIndex = '1-0'">未入住</el-menu-item>
-          <el-menu-item index="1-1" @click="activeIndex = '1-1'">已入住</el-menu-item>
-          <el-menu-item index="1-2" @click="activeIndex = '1-2'">已退订</el-menu-item>
-        </el-sub-menu> -->
+          <el-menu-item index="1-0" @click="activeSonIndex = '1-0'">未入住</el-menu-item>
+          <el-menu-item index="1-1" @click="activeSonIndex = '1-1'">已入住</el-menu-item>
+          <el-menu-item index="1-2" @click="activeSonIndex = '1-2'">已退订</el-menu-item>
+        </el-sub-menu>
         <el-menu-item index="2" @click="activeIndex = '2'">我的收藏</el-menu-item>
 
         <el-menu-item index="3" @click="activeIndex = '3'">修改密码</el-menu-item>
@@ -16,7 +16,7 @@
       </el-menu>
       <div class="content">
         <div class="order" v-if="activeIndex==='1'">
-          <PersonalOrder />
+          <PersonalOrder :activeIndex='activeSonIndex' />
         </div>
         <div class=" chang-psd" v-else-if="activeIndex==='3'">
           <span>你好！{{userInfo.userName}}</span>
@@ -42,7 +42,7 @@
           </Form>
           <el-button class="confirm-change" type="primary" round @click="changPwdFn">确认修改</el-button>
         </div>
-        <div class="myCollect" v-else>
+        <div class="myCollect" v-else-if="activeIndex==='2'">
           <PersonalCollect />
         </div>
       </div>
@@ -71,6 +71,8 @@ export default {
   },
   setup () {
     const activeIndex = ref("1");
+    const activeSonIndex = ref("1-0");
+
     const store = useStore()
     const router = useRouter()
     const userInfo = store.state.user.user
@@ -123,7 +125,7 @@ export default {
 
     }
 
-    return { activeIndex, userInfo, userPassword, schema, changPwdFn, formCom }
+    return { activeIndex, userInfo, userPassword, schema, changPwdFn, formCom, activeSonIndex }
   }
 }
 </script>

@@ -25,7 +25,7 @@
 
 <script>
 import { getHomestays } from '@/api/homestays'
-import { getMyAllCollect, getCollectUser } from '@/api/collect'
+import { getCollectNum, getCollectUser } from '@/api/collect'
 import { reactive, ref, watch } from 'vue'
 export default {
   name: 'collect',
@@ -38,7 +38,7 @@ export default {
       //   console.log(collectInfo.value);
     }, { immediate: true })
     const haveNum = ref([])
-    getMyAllCollect().then(data => {
+    getCollectNum().then(data => {
       //   console.log('111', data);
       haveNum.value = data.data.results
       if (data.data.status === 0) {

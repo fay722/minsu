@@ -8,8 +8,7 @@
       </div>
       <!-- 面板内容 -->
       <ul class="goods-list">
-        <li v-for=" (item,index) in homestays.splice(0,6)" :key="index"
-          @click="$router.push(`/homestaysInfo/${item.id}`)">
+        <li v-for=" (item,index) in homestays" :key="index" @click="$router.push(`/homestaysInfo/${item.id}`)">
           <img :src="item.mainImage" alt="">
           <p class="name ellipsis-2">{{item.title}}</p>
           <p class="price ">&yen;{{item.price}} / 晚</p>
@@ -20,6 +19,7 @@
 </template>
 
 <script>
+import { getAllCity } from '@/api/city'
 import HomePanel from './home-panel'
 import HomeButton from './home-button.vue'
 import { getHomestays, getCityHomestays } from '@/api/homestays'
@@ -32,11 +32,14 @@ export default {
     getHomestays().then((data) => {
       // console.log(data);
       homestays.value = data.data.filter(item => item.status === '0')
-      console.log(homestays.value);
+      // console.log(homestays.value);
 
     })
     const cityArr = ['丽江市', '重庆市', '成都市', '厦门市', '长沙市', '大理市', '三亚市']
     const currentIndex = 0
+    // getAllCity().then((data) => {
+    //   if(data.data.status === 1) {}
+    // })
 
     const citySearch = (city) => {
       getCityHomestays({ city }).then((data) => {

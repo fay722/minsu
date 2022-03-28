@@ -39,8 +39,8 @@
         </el-select>
       </el-form-item>
       <el-form-item label="详情图">
-        <el-upload action="#" list-type="picture-card" :auto-upload="false" :on-change="Change"
-          :on-remove="handleRemove">
+        <el-upload action="http://127.0.0.1:3007/api/upload" list-type="picture-card" :on-success="handleAvatarSuccess"
+          :on-preview="handlePictureCardPreview">
           <el-icon>
             <Plus />
           </el-icon>
@@ -160,38 +160,26 @@ export default {
     const dialogVisible = ref(false)
     const disabled = ref(false)
 
-    const handleRemove = (file, fileList) => {
-      console.log(file, fileList)
-    }
-
     const handlePictureCardPreview = (file) => {
       dialogImageUrl.value = file.url
       dialogVisible.value = true
     }
-    // const onChange = (file, fileList) => {
-    //   // var _this = this;
-    //   // var event = event || window.event;
-    //   // var file = event.target.files[0];
-    //   // var reader = new FileReader();
-    //   // //转base64
-    //   // reader.onload = function (e) {
-    //   //   _this.imageUrl = e.target.result //将图片路径赋值给src
-    //   // }
-    //   // reader.readAsDataURL(file);
-    //   console.log('123', file)
-    // }
-    const { proxy } = getCurrentInstance()
 
     const imageArr = ref([])
-    const Change = (file, fileList) => {
-      console.log('file', window.URL.createObjectURL(file.raw));
-      imageArr.value = fileList.map(x => { return x.url })
-    }
 
-    watch(() => imageArr.value, () => {
+    watch(() => imageArr.value.length, () => {
+      console.log('2');
       form.image = imageArr.value.join(';')
       form.mainImage = imageArr.value[0]
+      console.log(form.image);
     })
+
+    const handleAvatarSuccess = (res) => {
+      console.log(res);
+      imageArr.value.push(res.result.images)
+      // console.log(imageArr.value);
+    }
+  
 
 
     // 提交
@@ -203,6 +191,9 @@ export default {
       if (detailsArr.value.length < 3) return ElMessage({ message: '请继续填写！', type: 'error', center: true })
       for (var i in position.value) {
         if (!position.value[i]) return ElMessage({ message: '请继续填写详细信息！', type: 'error', center: true })
+      }
+      if (form.image.split(';').length < 5) {
+        return ElMessage({ message: '上传图片不小于5张', type: 'error', center: true })
       }
       addHomestays(form).then(data => {
         if (data.data.status === 0) {
@@ -219,7 +210,7 @@ export default {
     //vue3-javascript
 
 
-    return { goBack, form, onSubmit, detailsArr, onChange, onChange_2, address, rules, ruleFormRef, handleRemove, handlePictureCardPreview, dialogVisible, disabled, dialogImageUrl, Change }
+    return { goBack, form, onSubmit, detailsArr, onChange, onChange_2, address, rules, ruleFormRef, handleAvatarSuccess, handleRemove, handlePictureCardPreview, dialogVisible, disabled, dialogImageUrl }
   }
 }
 </script>

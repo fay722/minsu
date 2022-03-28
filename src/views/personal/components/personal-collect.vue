@@ -1,6 +1,6 @@
 <template>
   <div class="personal-collect">
-    <ul v-if="collectInfo">
+    <ul v-if="collectInfo.length!==0">
       <li class="order-item" v-for="item in collectInfo" @click="$router.push(`/homestaysInfo/${item.id}`)">
         <div class="position ellipsis">{{item.position}}</div>
         <div class="title ellipsis-2 ">{{item.title}}</div>

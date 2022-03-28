@@ -14,3 +14,7 @@ export const getOrder = () => {
 export const orderStatus2 = (data) => {
     return request('/my/orderStatus2', 'get', data)
 }
+// 退订订单 to1
+export const orderStatus1 = (data) => {
+    return request('/my/orderStatus1', 'get', data)
+}

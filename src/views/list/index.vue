@@ -23,7 +23,7 @@ import ListSort from './components/list-sort.vue'
 // import ListContent from './components/list-content'
 import { getHomestays } from '@/api/homestays'
 import { ref, watch } from 'vue'
-import { getMyAllCollect, getCollectUser } from '@/api/collect'
+import { getCollectNum } from '@/api/collect'
 export default {
   name: 'ListIndex',
   components: {
@@ -111,7 +111,7 @@ export default {
           searchResults.value = copy(testInfo.value)
         } else if (value.sortField === 'shoucang') {
           // 收藏数
-          await getMyAllCollect().then(data => {
+          await getCollectNum().then(data => {
             //   console.log('111', data);
             haveNum.value = data.data.results.filter(item => item.status === '0')
             if (data.data.status === 0) {
@@ -146,9 +146,10 @@ export default {
           allInfo.value = copy(testInfo.value)
         } else if (value.sortField === 'shoucang') {
           // 收藏数
-          await getMyAllCollect().then(data => {
-            //   console.log('111', data);
+          await getCollectNum().then(data => {
+            console.log('111', data);
             haveNum.value = data.data.results
+            console.log('haveNum', haveNum);
             if (data.data.status === 0) {
               allInfo.value.forEach(item => {
                 item.nums = 0

@@ -5,11 +5,15 @@
 </template>
 
 <script>
+import { getAllCity } from '@/api/city'
 export default {
   name: 'HomeButton',
   setup () {
     const cityArr = ['丽江', '重庆', '成都', '厦门', '长沙', '大理', '三亚']
     const currentIndex = 0
+    getAllCity().then((data) => {
+      console.log(data)
+    })
     return { cityArr, currentIndex }
   }
 }

@@ -3,14 +3,21 @@
     <el-button class="public" type="primary" round @click="AddTipFormVisible=true">添加</el-button>
     <!-- 表单 -->
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column label="城市" prop="city" />
-      <el-table-column label="天数" prop="days" />
-      <el-table-column label="攻略" prop="content" />
+      <el-table-column label="城市" prop="city" width="80px" />
+      <el-table-column label="天数" prop="days" width="80px" />
+      <el-table-column label="攻略标题" prop="title" />
+      <el-table-column label="攻略内容" prop="content" />
+      <!-- <el-table-column label="图片">
+        <template #default="scope">
+          <el-button size="small" @click="image(scope.row)">详情图</el-button>
+        </template>
+      </el-table-column> -->
       <el-table-column align="right">
         <template #header>
           <el-input v-model="search" size="small" placeholder="输入城市或天数" @change="searchFn" />
         </template>
         <template #default="scope">
+          <el-button size="small" @click="watchImage(scope.row)">图片</el-button>
           <el-button size="small" @click="handleEdit(scope.row)">Edit</el-button>
           <el-button size="small" type="danger" @click="delFn(scope.row)">Delete</el-button>
         </template>
@@ -29,8 +36,23 @@
           <!-- <el-option label="Zone No.2" value="beijing" /> -->
         </el-select>
       </el-form-item>
+      <el-form-item label="标题" :label-width="formLabelWidth">
+        <el-input v-model="formTip.title" type=" textarea" />
+      </el-form-item>
       <el-form-item label="攻略" :label-width="formLabelWidth">
         <el-input v-model="formTip.content" :rows="5" type="textarea" />
+      </el-form-item>
+      <el-form-item label="图片" :label-width="formLabelWidth">
+        <el-upload action="http://127.0.0.1:3007/api/upload" list-type="picture-card" :on-success="handleAvatarSuccess">
+          <el-icon>
+            <Plus />
+          </el-icon>
+          <template #file="{ file }">
+            <div>
+              <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+            </div>
+          </template>
+        </el-upload>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -59,6 +81,9 @@
       <el-form-item label="天数" :label-width="formLabelWidth">
         {{editForm.days}} 天
       </el-form-item>
+      <el-form-item label="标题" :label-width="formLabelWidth">
+        <el-input v-model="editForm.title" type="input" />
+      </el-form-item>
       <el-form-item label="攻略" :label-width="formLabelWidth">
         <el-input v-model="editForm.content" :rows="8" type="textarea" />
       </el-form-item>
@@ -70,6 +95,10 @@
       </span>
     </template>
   </el-dialog>
+  <!-- 图片 -->
+  <el-dialog v-model="ImgTipFormVisible" title="图片">
+    <img class="img-circ" :src="currentImg" alt="">
+  </el-dialog>
 
 </template>
 
@@ -77,18 +106,19 @@
 import { getAllTips, addTip, delTip, editTip, searchTip } from '@/api/admin'
 import { ref, reactive, watch } from 'vue'
 import { EluiChinaAreaDht } from 'elui-china-area-dht'
+import { Plus } from '@element-plus/icons-vue'
 
 import { ElMessage } from 'element-plus'
 export default {
   name: 'AdminTips',
   components: {
-    EluiChinaAreaDht
+    EluiChinaAreaDht, Plus
   },
   setup () {
     const tableData = ref([])
     getAllTips().then(data => {
       tableData.value = data.data.results
-      // console.log(tableData.value);
+      console.log(tableData.value);
     })
 
     // 添加攻略
@@ -97,7 +127,9 @@ export default {
     const formTip = reactive({
       city: '',
       days: '',
-      content: ''
+      title: '',
+      content: '',
+      image: '',
     })
     // 城市
     const chinaData = new EluiChinaAreaDht.ChinaArea().chinaAreaflat
@@ -105,6 +137,26 @@ export default {
       const one = chinaData[e[0]]
       formTip.city = chinaData[e[0]].label
     }
+    // 图片
+    // 详情图
+    const imageArr = ref([])
+    const handleAvatarSuccess = (res) => {
+      console.log(res);
+      imageArr.value.push(res.result.images)
+      // console.log(imageArr.value);
+    }
+    watch(() => imageArr.value.length, () => {
+      formTip.image = imageArr.value[0]
+      console.log(formTip);
+    })
+    // 查看图片
+    const ImgTipFormVisible = ref(false)
+    const currentImg = ref('')
+    const watchImage = (value) => {
+      ImgTipFormVisible.value = true
+      currentImg.value = value.image
+    }
+
     // 确定添加
     const AddTipFn = () => {
       if (formTip.city !== '' && formTip.days !== '' && formTip.content !== '') {
@@ -159,7 +211,7 @@ export default {
       editIndex.value = value.id
     }
     const editTipFn = () => {
-      editTip({ id: editIndex.value, content: editForm.value.content }).then(data => {
+      editTip(editForm.value).then(data => {
         if (data.data.status === 0) {
           ElMessage({ message: '修改成功', type: 'success', center: true, })
           getAllTips().then(data => {
@@ -198,7 +250,7 @@ export default {
       }
     })
 
-    return { tableData, AddTipFormVisible, formTip, formLabelWidth, chinaData, onChange, AddTipFn, delFn, confirmDelFn, delDialogVisible, handleEdit, editForm, editTipFormVisible, editTipFn, search, searchFn }
+    return { tableData, AddTipFormVisible, formTip, formLabelWidth, chinaData, onChange, AddTipFn, delFn, confirmDelFn, delDialogVisible, handleEdit, editForm, editTipFormVisible, editTipFn, search, searchFn, handleAvatarSuccess, ImgTipFormVisible, currentImg, watchImage }
   }
 }
 </script>
@@ -224,4 +276,11 @@ export default {
 /deep/.el-input__inner {
   border: 1px solid #ccc;
 }
+/deep/.el-table .el-table__cell {
+  text-align: center;
+}
+// .img-circ {
+//   width: 300px;
+//   height: 300px;
+// }
 </style>

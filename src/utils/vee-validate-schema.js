@@ -2,6 +2,7 @@ export default {
     userName (value) {
         if (!value) return '请输入用户名'
         if (!/^[\S]{3,12}/.test(value)) return '用户名为3-12个字符'
+        // if (/[\\u4E00-\\u9FFF]/.test(value)) return '用户名不可以有中文哦'
         return true
     },
     userPassword (value) {

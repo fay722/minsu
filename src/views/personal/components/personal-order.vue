@@ -1,13 +1,14 @@
 <template>
   <div class="personal-order-0">
     <ul v-if="isOk">
-      <li class="order-item" v-for="item in info" @click="openOrder(item.orderId)">
+      <li class="order-item" v-for="item in newInfo" @click="openOrder(item.orderId)">
         <div class="position">{{item.city}}</div>
         <div class="title ellipsis-2 ">{{item.title}}</div>
         <div class="days"> {{item.reserveDate}} to {{item.checkOutDate}}</div>
         <div class="tip" @click.stop="getTipFn(item.city,item.days,item.orderId)">推荐攻略</div>
       </li>
     </ul>
+    <div v-else class="noneText">您还有没订单！</div>
   </div>
   <!-- 订单详情弹层 -->
   <el-dialog v-model="dialogFormVisible" title="订单详情" v-if="info">
@@ -83,21 +84,55 @@
 </template>
 
 <script>
-import { getOrder, orderStatus2 } from '@/api/order'
-import { reactive, ref } from 'vue'
+import { getOrder, orderStatus2, orderStatus1 } from '@/api/order'
+import { reactive, ref, watch } from 'vue'
 import { getTip } from '@/api/tips'
 import { ElMessage } from 'element-plus'
 import { editTuidingStatus } from '@/api/homestays'
 export default {
   name: "PersonalOrder",
-  setup () {
+  props: {
+    activeIndex: {
+      type: String
+    }
+  },
+  setup (props) {
+
+
     const isOk = ref(false)
     const info = ref([])
-    getOrder().then(data => {
-      isOk.value = true
-      info.value = data.data.info
-      // console.log(info.value);
-    })
+    // getOrder().then(data => {
+    //   info.value = data.data.info
+    //   if (info.value.length > 0) isOk.value = true
+    //   // console.log(info.value.filter(item => item.orderStatus === '0'));
+    // })
+
+    const newInfo = ref([])
+    watch(() => props.activeIndex, (newVal) => {
+      getOrder().then(data => {
+        newInfo.value = []
+        info.value = data.data.info
+        if (info.value.length > 0) {
+          isOk.value = true
+          // console.log(info.value.filter(item => item.orderStatus === '0'));
+          if (props.activeIndex === '1-0') {
+            console.log('111---000');
+            newInfo.value = info.value.filter(item => item.orderStatus === '0')
+            console.log(newInfo.value);
+          }
+          if (props.activeIndex === '1-1') {
+            console.log('1111-111');
+            newInfo.value = info.value.filter(item => item.orderStatus === 1)
+          }
+          if (props.activeIndex === '1-2') {
+            console.log('1111 - 222');
+            newInfo.value = info.value.filter(item => item.orderStatus === 2)
+          }
+        }
+      })
+
+
+    }, { immediate: true })
 
     // 弹层
     const dialogFormVisible = ref(false)
@@ -107,23 +142,45 @@ export default {
     const currentStatus = ref('')
     const statusText = ref('')
     const openOrder = (orderId) => {
+
       currentStatus.value = ''
-      console.log('openOrderFn')
+      // console.log('openOrderFn')
       dialogFormVisible.value = true
       //   console.log(orderId)
-      currentIndex.value = info.value.findIndex(item => item.orderId === orderId)
-      currentInfo.value = info.value[currentIndex.value]
+      currentIndex.value = newInfo.value.findIndex(item => item.orderId === orderId)
+      currentInfo.value = newInfo.value[currentIndex.value]
       currentStatus.value = currentInfo.value.orderStatus
-      console.log(currentStatus.value);
+      // console.log(currentStatus.value);
+
+      // 对比时间
+      let now = new Date() //当前时间
+      let orderStartTime = new Date(currentInfo.value.reserveDate.replace(/-/g, "/"))
+      console.log(now.getTime(), orderStartTime.getTime());
+      if (currentStatus.value.orderStatus !== (2 || '2')) {
+        if (now.getTime() > orderStartTime.getTime()) {
+          // 已入住 to1
+          // 当前时间比指定时间大
+          orderStatus1(orderId).then(data => {
+            console.log(data);
+          })
+          console.log('当前时间比指定时间大');
+        } else {
+          // 当前时间比指定时间小
+          // 未入住 to2
+          console.log('当前时间比指定时间小');
+        }
+      }
+
+
       if (currentStatus.value === '0') {
         statusText.value = '未入住'
-      } else if (currentStatus.value === '1') {
+      } else if (currentStatus.value === (1 || '1')) {
         statusText.value = '已入住'
       } else {
         statusText.value = '已退订'
       }
       console.log('11', currentInfo.value);
-      console.log('index', currentInfo.value);
+      // console.log('index', currentInfo.value);
     }
 
 
@@ -198,9 +255,10 @@ export default {
 
         }
       })
-
     }
-    return { isOk, info, dialogFormVisible, formLabelWidth, openOrder, currentInfo, isTips, orderToTip, tipToOrder, getTipFn, tip, oId, message, isShow, unsubscribe, innerVisible, tuiding, statusText, currentStatus }
+    // 显示哪个
+
+    return { newInfo, isOk, info, dialogFormVisible, formLabelWidth, openOrder, currentInfo, isTips, orderToTip, tipToOrder, getTipFn, tip, oId, message, isShow, unsubscribe, innerVisible, tuiding, statusText, currentStatus }
   }
 }
 </script>
@@ -232,6 +290,10 @@ export default {
       color: #4e5b89;
       cursor: pointer;
     }
+  }
+  .noneText {
+    font-size: 24px;
+    text-align: center;
   }
 }
 /deep/.el-form-item__label {

@@ -31,6 +31,16 @@ const routes = [
     path: '/homestaysInfo/:id',
     component: () => import('@/views/homestayInfo')
   },
+  {
+    path: '/tips',
+    component: () => import('@/views/tips')
+
+  },
+  {
+    path: '/tips/tipContent/:id',
+    component: () => import('@/views/tips/tipContent')
+
+  },
   // 管理员
   {
     path: '/admin',
@@ -73,20 +83,16 @@ const router = createRouter({
   },
 })
 // 路由守卫
-// router.beforeEach((to, from) => {
-//   if (to.path === '/admin') {
-//     // console.log(store.state.user.user)
-//     if (store.state.user.user.userName === 'admin') {
-//       return true
-//     } else {
-//       return false
-//     }
-//   } else if (to.path === '/login') {
-//     return true
-//   } else {
-
-//   }
-// })
+router.beforeEach((to, from) => {
+  if (to.path === '/admin') {
+    // console.log(store.state.user.user)
+    if (store.state.user.user.userName === 'admin') {
+      return true
+    } else {
+      return false
+    }
+  }
+})
 
 export default router
 

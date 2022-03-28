@@ -14,11 +14,16 @@
           </li>
           <li><a href="javascript:;">免费注册</a></li>
         </template>
+        <template v-if="userInfo.userName==='admin'">
+          <li>
+            <router-link to="/admin">返回后台</router-link>
+          </li>
+        </template>
         <li><a href="javascript:;">帮助中心</a></li>
         <li><a href="javascript:;">关于我们</a></li>
-        <li>
+        <!-- <li>
           <a href="javascript:;"><i class="iconfont icon-phone"></i>手机版</a>
-        </li>
+        </li> -->
       </ul>
     </div>
   </div>

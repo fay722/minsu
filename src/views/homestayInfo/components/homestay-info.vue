@@ -78,7 +78,7 @@
     </div>
     <!-- 弹出预定框 -->
     <el-dialog v-model="dialogFormVisible" title="预定信息">
-      <el-form :model="form">
+      <el-form :model="form" :rules="rules">
         <!-- 确认预定框 -->
         <el-dialog v-model="innerVisible" width="30%" title="确认预定吗" append-to-body>
           <el-form-item label="总价" :label-width="formLabelWidth">
@@ -107,9 +107,7 @@
           {{value?value:'未选择'}}
         </el-form-item>
         <el-form-item label="手机号" :label-width="formLabelWidth">
-          <el-input v-model.number="form.tel" autocomplete="off" maxlength="11"
-            oninput="value = value.replace(/[^\d]/g,'')" />
-          <div v-if="rules.error"> {{rules.error}}</div>
+          <el-input v-model.number="form.tel" autocomplete="off" />
         </el-form-item>
         <el-form-item label="入住人" :label-width="formLabelWidth">
           <el-input v-model="form.person" autocomplete="off" />
@@ -136,6 +134,7 @@ import { getCollectNum, editHomestayStatus } from '@/api/homestays'
 import MinsuLike from '@/components/minsu-like'
 import { watchCollect } from '@/api/user'
 import { useStore } from 'vuex'
+import { idGetCity } from '@/api/city'
 export default {
   name: 'HomestayInfo',
   components: { MinsuLike },
@@ -149,12 +148,17 @@ export default {
     const route = useRoute()
 
     const detailsArray = ref([])
-    const collectNum = ref(null)
+    const collectNum = ref(0)
     const isLiking = ref(false)
     // 查看用户是否收藏
     const store = useStore()
+    watch(props, async () => {
+      // //  获取城市
+      // await idGetCity({ id: props.homestay.city }).then(data => {
+      //   props.homestay.city = data.data.results.city
+      // })
+      // console.log(props.homestay.city);
 
-    watch(props, () => {
       // 查看是否收藏
       if (store.state.user.user.token) {
         // console.log('1');
@@ -173,23 +177,13 @@ export default {
         })
       }
       // 收藏数
-      getCollectNum({ homeId: props.homestay.id }).then(data => {
+      await getCollectNum({ homeId: props.homestay.id }).then(data => {
         if (data.data.status === 0) {
+          // console.log(data);
           collectNum.value = data.data.result.num
           // console.log(collectNum.value);
         }
       })
-      // watch(() => isLiking.value, () => {
-      //   getCollectNum({ homeId: props.homestay.id }).then(data => {
-      //     if (data.data.status === 0) {
-      //       console.log('zong', data)
-      //       collectNum.value = data.data.result.num
-      //       // console.log(collectNum.value);
-      //     }
-      //   })
-      // })
-      // console.log('1', props.homestay.id);
-      // console.log('1', props.homestay);
       detailsArray.value = props.homestay.details.split(';')
       // console.log(detailsArray.value);
     })
@@ -256,16 +250,16 @@ export default {
     const dialogFormVisible = ref(false)
     const formLabelWidth = '140px'
 
-    const rules = {
+    const rules = reactive({
       tel: [
         { required: true, message: "请输入手机号码", trigger: "blur" },
         { min: 11, max: 11, message: "请输入11位手机号码", trigger: "blur" }
       ]
-    }
+    })
     // 内 确认弹出框
     const innerVisible = ref(false)
     const confirmFn = () => {
-      if (form.name == "" || form.tel == "" || form.tel.length !== 11 || form.formDate == "" || form.reserveDate == "" || form.checkOutDate == "" || form.days == "" || form.peoples == "" || form.person == "") {
+      if (form.tel === "" || form.formDate === "" || form.reserveDate === "" || form.checkOutDate === "" || form.days === "" || form.person === "") {
         return ElMessage({
           message: '信息不完善！',
           type: 'error',
